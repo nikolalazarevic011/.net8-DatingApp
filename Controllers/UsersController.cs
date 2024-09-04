@@ -13,10 +13,13 @@ namespace API.Controllers;
 public class UsersController(IUserRepository userRepository, IPhotoService photoService, IMapper mapper) : BaseApiController
 {
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers()
+    public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers([FromQuery]UserParams userParams)
     {
-        var users = await userRepository.GetMembersAsync();
-
+        userParams.CurrentUsername = User.GetUsername();
+        var users = await userRepository.GetMembersAsync(userParams);
+        
+        Response.AddPaginationHeader(users);
+        
         return Ok(users); //sec 8 iuserrepository zasto ovde mora OK a dole ne mora, nesto sa collections u .netu
     }
 
